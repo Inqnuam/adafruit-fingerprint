@@ -244,7 +244,7 @@ class Fingerprint {
     updateParameters() {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.getSystemParameters();
-            yield this.getTemplateIndexes();
+            // await this.getTemplateIndexes()
         });
     }
     getEmptyIndex() {
