@@ -584,10 +584,8 @@ class Sensor {
             return (yield this.write([ledOn ? IC.LED_ON : IC.LED_OFF])).code;
         });
     }
-    ledColor() {
+    ledColor(speed = 0, count = 0) {
         return __awaiter(this, void 0, void 0, function* () {
-            const speed = 3;
-            const count = 9;
             return (yield this.write([IC.LED_CONTROL, IC.LED_FLASHING, speed, IC.LED_RED, count])).code;
         });
     }

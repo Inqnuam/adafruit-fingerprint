@@ -133,7 +133,7 @@ export default class Sensor {
     delete(pageId: number, numberOfTemplates: number): Promise<ConfirmationCode>;
     emptyDatabase(): Promise<ConfirmationCode>;
     ledOn(ledOn?: boolean): Promise<ConfirmationCode>;
-    ledColor(): Promise<ConfirmationCode>;
+    ledColor(speed?: number, count?: number): Promise<ConfirmationCode>;
     match(): Promise<MatchPacket>;
     search(slot: 1 | 2, startPage: number, pageNumber: number): Promise<SearchPacket>;
     fastSearch(slot: 1 | 2, startPage: number, pageNumber: number): Promise<SearchPacket>;
