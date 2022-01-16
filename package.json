@@ -10,9 +10,6 @@
   "scripts": {
     "build": "tsc -p ."
   },
-  "publishConfig": {
-    "registry":"https://npm.pkg.github.com"
-  },
   "devDependencies": {
     "typescript": "^4.5.4"
   },
