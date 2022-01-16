@@ -56,6 +56,9 @@ export declare namespace IC {
     const FASTSEARCH = 27;
     const TEMPLATE_COUNT = 29;
     const TEMPLATE_TABLE = 31;
+    const LED_CONTROL = 53;
+    const LED_ON = 80;
+    const LED_OFF = 81;
 }
 export declare const enum SysParaNumber {
     Baudrate = 4,
@@ -122,6 +125,8 @@ export default class Sensor {
     loadChar(slot: 1 | 2, pageId: number): Promise<ConfirmationCode>;
     delete(pageId: number, numberOfTemplates: number): Promise<ConfirmationCode>;
     emptyDatabase(): Promise<ConfirmationCode>;
+    ledOn(): Promise<ConfirmationCode>;
+    ledOff(): Promise<ConfirmationCode>;
     match(): Promise<MatchPacket>;
     search(slot: 1 | 2, startPage: number, pageNumber: number): Promise<SearchPacket>;
     fastSearch(slot: 1 | 2, startPage: number, pageNumber: number): Promise<SearchPacket>;

@@ -79,6 +79,9 @@ var IC;
     IC.FASTSEARCH = 0x1B;
     IC.TEMPLATE_COUNT = 0x1D;
     IC.TEMPLATE_TABLE = 0x1F;
+    IC.LED_CONTROL = 0x35;
+    IC.LED_ON = 0x50;
+    IC.LED_OFF = 0x51;
 })(IC = exports.IC || (exports.IC = {}));
 //Error Codes 
 var ERR;
@@ -567,6 +570,16 @@ class Sensor {
     emptyDatabase() {
         return __awaiter(this, void 0, void 0, function* () {
             return (yield this.write([IC.EMPTY])).code;
+        });
+    }
+    ledOn() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return (yield this.write([IC.LED_ON])).code;
+        });
+    }
+    ledOff() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return (yield this.write([IC.LED_OFF])).code;
         });
     }
     match() {

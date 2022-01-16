@@ -64,6 +64,9 @@ export namespace IC {
     export const FASTSEARCH = 0x1B
     export const TEMPLATE_COUNT = 0x1D
     export const TEMPLATE_TABLE = 0x1F
+    export const LED_CONTROL = 0x35
+    export const LED_ON = 0x50
+    export const LED_OFF = 0x51
 }
 
 export const enum SysParaNumber {
@@ -614,6 +617,12 @@ export default class Sensor {
         return (await this.write([IC.EMPTY])).code
     }
 
+    public async ledOn() {
+        return (await this.write([IC.LED_ON])).code
+    }
+    public async ledOff() {
+        return (await this.write([IC.LED_OFF])).code
+    }
     public async match(): Promise<MatchPacket> {
         const {code, data} = await this.write([IC.MATCH])
         const matchingScore = data[0] * 256 + data[1]
