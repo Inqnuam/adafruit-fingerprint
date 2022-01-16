@@ -151,8 +151,8 @@ export default class Fingerprint {
     
     public async getTemplateIndexes() {
         const res:number[] = [];
-        for(let i=0; i < 4; i++) {
-            const {code, indexes} = (await this._sensor.templateIndexes(i as  0 | 1 | 2 | 3))
+        for(let i=0; i < 2; i++) {
+            const {code, indexes} = (await this._sensor.templateIndexes(i as  0 | 1))
             if (code !== CC.OK)
                 throw new ConfirmationCodeError(code, 'Reading templates failed')
             res.push(...indexes)
@@ -220,7 +220,7 @@ export default class Fingerprint {
 
     private async updateParameters() {
         await this.getSystemParameters()
-       // await this.getTemplateIndexes()
+        await this.getTemplateIndexes()
     }
 
     private getEmptyIndex() {

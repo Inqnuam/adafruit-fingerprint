@@ -181,7 +181,7 @@ class Fingerprint {
     getTemplateIndexes() {
         return __awaiter(this, void 0, void 0, function* () {
             const res = [];
-            for (let i = 0; i < 4; i++) {
+            for (let i = 0; i < 2; i++) {
                 const { code, indexes } = (yield this._sensor.templateIndexes(i));
                 if (code !== Sensor_1.CC.OK)
                     throw new ConfirmationCodeError(code, 'Reading templates failed');
@@ -244,7 +244,7 @@ class Fingerprint {
     updateParameters() {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.getSystemParameters();
-            // await this.getTemplateIndexes()
+            yield this.getTemplateIndexes();
         });
     }
     getEmptyIndex() {
