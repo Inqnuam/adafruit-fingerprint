@@ -1,0 +1,20 @@
+{
+  "name": "adafruit-fingerprint-sensor",
+  "version": "1.0.5",
+  "description": "Adafruit Fingerprint Sensor",
+  "main": "dist/index.js",
+  "types": "dist",
+  "author": "AHA",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc -p ."
+  },
+  "devDependencies": {
+    "typescript": "^4.5.4"
+  },
+  "dependencies": {
+    "@types/serialport": "^8.0.2",
+    "jimp": "^0.16.1",
+    "serialport": "^9.2.8"
+  }
+}
