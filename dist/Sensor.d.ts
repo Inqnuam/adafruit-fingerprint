@@ -59,6 +59,13 @@ export declare namespace IC {
     const LED_CONTROL = 53;
     const LED_ON = 80;
     const LED_OFF = 81;
+    const LED_GRADUAL_ON = 5;
+    const LED_GRADUAL_OFF = 6;
+    const LED_RED = 1;
+    const LED_BLUE = 2;
+    const LED_PURPLE = 3;
+    const LED_BREATHING = 1;
+    const LED_FLASHING = 2;
 }
 export declare const enum SysParaNumber {
     Baudrate = 4,
@@ -125,8 +132,8 @@ export default class Sensor {
     loadChar(slot: 1 | 2, pageId: number): Promise<ConfirmationCode>;
     delete(pageId: number, numberOfTemplates: number): Promise<ConfirmationCode>;
     emptyDatabase(): Promise<ConfirmationCode>;
-    ledOn(): Promise<ConfirmationCode>;
-    ledOff(): Promise<ConfirmationCode>;
+    ledOn(ledOn?: boolean): Promise<ConfirmationCode>;
+    ledColor(): Promise<ConfirmationCode>;
     match(): Promise<MatchPacket>;
     search(slot: 1 | 2, startPage: number, pageNumber: number): Promise<SearchPacket>;
     fastSearch(slot: 1 | 2, startPage: number, pageNumber: number): Promise<SearchPacket>;

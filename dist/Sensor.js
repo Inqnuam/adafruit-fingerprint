@@ -82,6 +82,13 @@ var IC;
     IC.LED_CONTROL = 0x35;
     IC.LED_ON = 0x50;
     IC.LED_OFF = 0x51;
+    IC.LED_GRADUAL_ON = 0x05;
+    IC.LED_GRADUAL_OFF = 0x06;
+    IC.LED_RED = 0x01;
+    IC.LED_BLUE = 0x02;
+    IC.LED_PURPLE = 0x03;
+    IC.LED_BREATHING = 0x01;
+    IC.LED_FLASHING = 0x02;
 })(IC = exports.IC || (exports.IC = {}));
 //Error Codes 
 var ERR;
@@ -572,14 +579,16 @@ class Sensor {
             return (yield this.write([IC.EMPTY])).code;
         });
     }
-    ledOn() {
+    ledOn(ledOn = true) {
         return __awaiter(this, void 0, void 0, function* () {
-            return (yield this.write([IC.LED_ON])).code;
+            return (yield this.write([ledOn ? IC.LED_ON : IC.LED_OFF])).code;
         });
     }
-    ledOff() {
+    ledColor() {
         return __awaiter(this, void 0, void 0, function* () {
-            return (yield this.write([IC.LED_OFF])).code;
+            const speed = 3;
+            const count = 9;
+            return (yield this.write([IC.LED_CONTROL, IC.LED_FLASHING, speed, IC.LED_RED, count])).code;
         });
     }
     match() {

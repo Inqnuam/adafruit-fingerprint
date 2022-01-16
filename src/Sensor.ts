@@ -67,6 +67,13 @@ export namespace IC {
     export const LED_CONTROL = 0x35
     export const LED_ON = 0x50
     export const LED_OFF = 0x51
+    export const LED_GRADUAL_ON = 0x05
+    export const LED_GRADUAL_OFF = 0x06
+    export const LED_RED = 0x01
+    export const LED_BLUE = 0x02 
+    export const LED_PURPLE = 0x03 
+    export const LED_BREATHING = 0x01
+    export const LED_FLASHING = 0x02
 }
 
 export const enum SysParaNumber {
@@ -617,11 +624,13 @@ export default class Sensor {
         return (await this.write([IC.EMPTY])).code
     }
 
-    public async ledOn() {
-        return (await this.write([IC.LED_ON])).code
+    public async ledOn(ledOn:boolean = true) {
+        return (await this.write([ledOn ? IC.LED_ON : IC.LED_OFF])).code
     }
-    public async ledOff() {
-        return (await this.write([IC.LED_OFF])).code
+    
+    public async ledColor (speed: number = 0 , count: number = 0) {
+     
+        return (await this.write([IC.LED_CONTROL, IC.LED_FLASHING, speed, IC.LED_RED, count])).code
     }
     public async match(): Promise<MatchPacket> {
         const {code, data} = await this.write([IC.MATCH])
