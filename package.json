@@ -16,6 +16,6 @@
   "dependencies": {
     "@types/serialport": "^8.0.2",
     "jimp": "^0.16.1",
-    "serialport": "^9.2.8"
+    "serialport": "^10.0.1"
   }
 }
