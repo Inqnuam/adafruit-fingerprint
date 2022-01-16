@@ -220,7 +220,7 @@ export default class Fingerprint {
 
     private async updateParameters() {
         await this.getSystemParameters()
-        await this.getTemplateIndexes()
+       // await this.getTemplateIndexes()
     }
 
     private getEmptyIndex() {
