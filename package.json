@@ -1,21 +1,21 @@
 {
-  "name": "adafruit-fingerprint",
-  "version": "1.0.6",
-  "description": "Adafruit Fingerprint Sensor",
-  "repository": "git@github.com:Inqnuam/adafruit-fingerprint.git",
-  "main": "dist/index.js",
-  "types": "dist",
-  "author": "Inqnuam",
-  "license": "MIT",
-  "scripts": {
-    "build": "tsc -p ."
-  },
-  "devDependencies": {
-    "typescript": "^4.5.4"
-  },
-  "dependencies": {
-    "@types/serialport": "^8.0.2",
-    "jimp": "^0.16.1",
-    "serialport": "^10.0.1"
-  }
+    "name": "adafruit-fingerprint",
+    "version": "1.0.6",
+    "description": "Adafruit Fingerprint Sensor",
+    "repository": "git@github.com:Inqnuam/adafruit-fingerprint.git",
+    "main": "dist/index.js",
+    "types": "dist",
+    "author": "Inqnuam",
+    "license": "MIT",
+    "scripts": {
+        "build": "tsc -p ."
+    },
+    "devDependencies": {
+        "typescript": "^4.5.5"
+    },
+    "dependencies": {
+        "@types/serialport": "^8.0.2",
+        "jimp": "^0.16.1",
+        "serialport": "^10.0.1"
+    }
 }

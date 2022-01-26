@@ -110,6 +110,7 @@ export default class Sensor {
     private stopTimer;
     on(event: SensorEvents, callback: CallbackFunction): void;
     once(event: SensorEvents, callback: CallbackFunction): void;
+    close(callback: any): void;
     handshake(): Promise<ConfirmationCode>;
     verifyPass(): Promise<ConfirmationCode>;
     setPass(password: number): Promise<ConfirmationCode>;

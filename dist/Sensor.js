@@ -34,20 +34,20 @@ var CC;
     CC.IMAGE_NOCHAR = 0x07;
     CC.FINGER_NOTMATCH = 0x08;
     CC.FINGER_NOTFOUND = 0x09;
-    CC.ENROLL_MISMATCH = 0x0A;
-    CC.BADLOCATION = 0x0B;
-    CC.TEMPLATEDB_FAIL = 0x0C;
-    CC.UPLOAD_FAIL = 0x0D;
-    CC.PACKETRESPONSE_FAIL = 0x0E;
+    CC.ENROLL_MISMATCH = 0x0a;
+    CC.BADLOCATION = 0x0b;
+    CC.TEMPLATEDB_FAIL = 0x0c;
+    CC.UPLOAD_FAIL = 0x0d;
+    CC.PACKETRESPONSE_FAIL = 0x0e;
     CC.DELETE_FAIL = 0x10;
     CC.CLEARDB_FAIL = 0x11;
     CC.INVALID_IMAGE = 0x15;
     CC.FLASH_ERROR = 0x18;
     CC.DEFINITION_ERROR = 0x19;
-    CC.INVALID_REGISTER = 0x1A;
-    CC.INVALID_REGCONFIG = 0x1B;
-    CC.NOTEPADID_NOTFOUND = 0x1C;
-    CC.COMM_FAIL = 0x1D;
+    CC.INVALID_REGISTER = 0x1a;
+    CC.INVALID_REGCONFIG = 0x1b;
+    CC.NOTEPADID_NOTFOUND = 0x1c;
+    CC.COMM_FAIL = 0x1d;
     CC.INVALID_ADDRCODE = 0x20;
     CC.PASS_NOTVERIFIED = 0x21;
 })(CC = exports.CC || (exports.CC = {}));
@@ -70,15 +70,15 @@ var IC;
     IC.HANDSHAKE = 0x17;
     IC.WRITE_NOTEPAD = 0x18;
     IC.READ_NOTEPAD = 0x19;
-    IC.UP_IMAGE = 0x0A;
-    IC.DOWN_IMAGE = 0x0B;
-    IC.DELETE_CHAR = 0x0C;
-    IC.EMPTY = 0x0D;
-    IC.SET_SYSPAR = 0x0E;
-    IC.READ_SYSPAR = 0x0F;
-    IC.FASTSEARCH = 0x1B;
-    IC.TEMPLATE_COUNT = 0x1D;
-    IC.TEMPLATE_TABLE = 0x1F;
+    IC.UP_IMAGE = 0x0a;
+    IC.DOWN_IMAGE = 0x0b;
+    IC.DELETE_CHAR = 0x0c;
+    IC.EMPTY = 0x0d;
+    IC.SET_SYSPAR = 0x0e;
+    IC.READ_SYSPAR = 0x0f;
+    IC.FASTSEARCH = 0x1b;
+    IC.TEMPLATE_COUNT = 0x1d;
+    IC.TEMPLATE_TABLE = 0x1f;
     IC.LED_CONTROL = 0x35;
     IC.LED_ON = 0x50;
     IC.LED_OFF = 0x51;
@@ -90,7 +90,7 @@ var IC;
     IC.LED_BREATHING = 0x01;
     IC.LED_FLASHING = 0x02;
 })(IC = exports.IC || (exports.IC = {}));
-//Error Codes 
+//Error Codes
 var ERR;
 (function (ERR) {
     ERR.TIMEOUT = 1;
@@ -99,13 +99,13 @@ var ERR;
     ERR.PORT_NOTOPEN = 5;
 })(ERR = exports.ERR || (exports.ERR = {}));
 class Sensor {
-    constructor({ serialPort, baudRate = 57600, address = 0xFFFFFFFF, password = 0, timeout = 1000 }) {
+    constructor({ serialPort, baudRate = 57600, address = 0xffffffff, password = 0, timeout = 1000 }) {
         this.rx = [];
         this.receivedData = [];
         this.commands = [];
-        this.mode = 'available';
+        this.mode = "available";
         this.dataPacket = new DataPacket();
-        this.header = [0xEF, 0x01];
+        this.header = [0xef, 0x01];
         this.timeoutTimer = null;
         //callbacks
         this.onReady = [];
@@ -115,10 +115,10 @@ class Sensor {
         this.onPortError = [];
         this.oncePortError = [];
         if (!Helper_1.helper.check4BytesRange(address))
-            throw Error('Address is out of range');
+            throw Error("Address is out of range");
         this.address = Helper_1.helper.get4BytesArray(address);
         if (!Helper_1.helper.check4BytesRange(password))
-            throw Error('Password is out of range');
+            throw Error("Password is out of range");
         this.password = Helper_1.helper.get4BytesArray(password);
         this.validPacketStart = [...this.header, ...this.address];
         this.timeout = timeout;
@@ -135,13 +135,17 @@ class Sensor {
                 }, 700);
             }
         });
-        this.port.on('data', (data) => {
-            if (this.mode !== 'available') {
+        this.port.on("data", (data) => {
+            if (this.mode !== "available") {
                 this.processRX(data.toJSON().data);
             }
         });
-        this.port.on('close', () => { this.emitOnPortClose(); });
-        this.port.on('error', () => { this.emitOnPortError(); });
+        this.port.on("close", () => {
+            this.emitOnPortClose();
+        });
+        this.port.on("error", () => {
+            this.emitOnPortError();
+        });
     }
     write(commandData, dataPacket = new DataPacket()) {
         return new Promise((resolve, reject) => {
@@ -155,8 +159,8 @@ class Sensor {
         });
     }
     processTX() {
-        if (this.mode === 'available' && this.commands.length >= 1) {
-            this.mode = 'command';
+        if (this.mode === "available" && this.commands.length >= 1) {
+            this.mode = "command";
             this.sendCommandPacket();
         }
     }
@@ -164,14 +168,14 @@ class Sensor {
         const bytes = [...this.header, ...this.address, pid];
         const length = data.length + 2;
         let checkSum = pid;
-        const len = [(length >> 8) & 0xFF, length & 0xFF];
+        const len = [(length >> 8) & 0xff, length & 0xff];
         bytes.push(...len);
         checkSum += len[0] + len[1];
         data.forEach((val) => {
             bytes.push(val);
             checkSum += val;
         });
-        bytes.push((checkSum >> 8) & 0xFF, checkSum & 0xFF);
+        bytes.push((checkSum >> 8) & 0xff, checkSum & 0xff);
         this.port.write(Buffer.from(bytes));
     }
     sendCommandPacket() {
@@ -198,7 +202,7 @@ class Sensor {
         }
         this.sendPacket(PID.END_OF_DATA, data);
         pk.emitSendFinish();
-        this.mode = 'available';
+        this.mode = "available";
         this.dataPacket = new DataPacket();
         this.processTX();
     }
@@ -215,7 +219,7 @@ class Sensor {
             }
             //Calculating the received checksum
             const receivedCheckSum = this.rx[7 + length] * 256 + this.rx[8 + length];
-            if (this.mode === 'command') {
+            if (this.mode === "command") {
                 const code = this.rx[9];
                 checkSum += this.rx[9];
                 if (pid !== PID.ACKNOWLEDGE) {
@@ -243,15 +247,15 @@ class Sensor {
                     this.receivedData = [];
                     this.resolveCommand({
                         code,
-                        data
-                    }, 'data-receive');
+                        data,
+                    }, "data-receive");
                 }
                 else if (this.dataPacket instanceof SendDataPacket) {
                     this.rx = [];
                     this.resolveCommand({
                         code,
-                        data: receivedData
-                    }, 'data-send');
+                        data: receivedData,
+                    }, "data-send");
                     this.sendDataPacket();
                 }
                 else {
@@ -263,7 +267,7 @@ class Sensor {
                 }
                 return;
             }
-            if (this.mode === 'data-receive' && this.dataPacket instanceof ReceiveDataPacket) {
+            if (this.mode === "data-receive" && this.dataPacket instanceof ReceiveDataPacket) {
                 this.restartTimer();
                 if (![PID.DATA_PACKET, PID.END_OF_DATA].includes(pid)) {
                     this.dataPacket.emitReceiveError(ERR.RECEIVEDPACKET_CORRUPTED);
@@ -290,7 +294,10 @@ class Sensor {
                 const value = current / size;
                 const percent = value * 100;
                 this.dataPacket.emitReceiveProgress({
-                    current, size, value, percent,
+                    current,
+                    size,
+                    value,
+                    percent,
                     newData: receivedData,
                 });
                 if (pid === PID.DATA_PACKET) {
@@ -301,15 +308,15 @@ class Sensor {
                     this.stopTimer();
                     this.dataPacket.emitReceiveFinish(this.receivedData);
                     this.dataPacket = new DataPacket();
-                    this.mode = 'available';
+                    this.mode = "available";
                     this.processTX();
                 }
                 return;
             }
         }
     }
-    resolveCommand(ackPacket, mode = 'available') {
-        if (mode === 'data-receive')
+    resolveCommand(ackPacket, mode = "available") {
+        if (mode === "data-receive")
             this.restartTimer();
         else
             this.stopTimer();
@@ -321,25 +328,26 @@ class Sensor {
     rejectCommand(errorCode) {
         this.stopTimer();
         const { reject } = this.commands.shift();
-        reject(new CommunicationError(errorCode, 'Communication with sensor failed.'));
-        this.mode = 'available';
+        reject(new CommunicationError(errorCode, "Communication with sensor failed."));
+        this.mode = "available";
         this.processTX();
     }
     restartTimer() {
         this.stopTimer();
         this.timeoutTimer = setTimeout(() => {
             if (this.port.isOpen) {
-                if (this.mode === 'command')
+                if (this.mode === "command")
                     this.rejectCommand(ERR.TIMEOUT);
-                else if (this.mode === 'data-receive') {
+                else if (this.mode === "data-receive") {
+                    ;
                     this.dataPacket.emitReceiveError(ERR.TIMEOUT);
-                    this.mode = 'available';
+                    this.mode = "available";
                 }
             }
             else {
-                if (this.mode === 'command')
+                if (this.mode === "command")
                     this.rejectCommand(ERR.PORT_NOTOPEN);
-                else if (this.mode === 'data-receive')
+                else if (this.mode === "data-receive")
                     this.dataPacket.emitReceiveError(ERR.PORT_NOTOPEN);
             }
         }, this.timeout);
@@ -352,29 +360,34 @@ class Sensor {
     }
     on(event, callback) {
         switch (event) {
-            case 'ready':
+            case "ready":
                 this.onReady.push(callback);
                 break;
-            case 'port-close':
+            case "port-close":
                 this.onPortClose.push(callback);
                 break;
-            case 'port-error':
+            case "port-error":
                 this.onPortError.push(callback);
                 break;
         }
     }
     once(event, callback) {
         switch (event) {
-            case 'ready':
+            case "ready":
                 this.onceReady.push(callback);
                 break;
-            case 'port-close':
+            case "port-close":
                 this.oncePortClose.push(callback);
                 break;
-            case 'port-error':
+            case "port-error":
                 this.oncePortError.push(callback);
                 break;
         }
+    }
+    close(callback) {
+        this.port.close((error) => {
+            callback(error);
+        });
     }
     //there has to be a small amount of time between handshake/verifyPass and the next command
     //otherwise it will timeout
@@ -391,7 +404,7 @@ class Sensor {
     setPass(password) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!Helper_1.helper.check4BytesRange(password))
-                throw Error('Password is out of range');
+                throw Error("Password is out of range");
             const pass = Helper_1.helper.get4BytesArray(password);
             return (yield this.write([IC.SET_PASS, ...pass])).code;
         });
@@ -399,7 +412,7 @@ class Sensor {
     setAddr(address) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!Helper_1.helper.check4BytesRange(address))
-                throw Error('Address is out of range');
+                throw Error("Address is out of range");
             const addr = Helper_1.helper.get4BytesArray(address);
             this.validPacketStart = this.header.concat(addr);
             const code = (yield this.write([IC.SET_ADDR, ...addr])).code;
@@ -414,26 +427,26 @@ class Sensor {
     }
     setSysBaudrate(baudRate) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.setSysPara(4 /* Baudrate */, baudRate / 9600);
+            return yield this.setSysPara(4 /* Baudrate */, (baudRate / 9600));
         });
     }
     setSysSecurityLevel(level) {
         return __awaiter(this, void 0, void 0, function* () {
             let lv = 3;
             switch (level) {
-                case 'very high':
+                case "very high":
                     lv = 5;
                     break;
-                case 'high':
+                case "high":
                     lv = 4;
                     break;
-                case 'medium':
+                case "medium":
                     lv = 3;
                     break;
-                case 'low':
+                case "low":
                     lv = 2;
                     break;
-                case 'very low':
+                case "very low":
                     lv = 1;
                     break;
                 default:
@@ -446,16 +459,16 @@ class Sensor {
         return __awaiter(this, void 0, void 0, function* () {
             let len = 1;
             switch (length) {
-                case '32bytes':
+                case "32bytes":
                     len = 0;
                     break;
-                case '64bytes':
+                case "64bytes":
                     len = 1;
                     break;
-                case '128bytes':
+                case "128bytes":
                     len = 2;
                     break;
-                case '256bytes':
+                case "256bytes":
                     len = 3;
                     break;
                 default:
@@ -481,7 +494,7 @@ class Sensor {
             const securityLevelCode = data[6] * 256 + data[7];
             const address = data[8] * 0x1000000 + data[9] * 0x10000 + data[10] * 0x100 + data[11];
             const dataPackageLengthCode = data[12] * 256 + data[13];
-            const baudRate = (data[14] * 256 + data[15]) * 9600;
+            const baudRate = ((data[14] * 256 + data[15]) * 9600);
             return {
                 code: packet.code,
                 data,
@@ -493,7 +506,7 @@ class Sensor {
                 address,
                 dataPackageLength: Helper_1.helper.getDataPackageLength(dataPackageLengthCode),
                 dataPackageLengthCode,
-                baudRate
+                baudRate,
             };
         });
     }
@@ -631,18 +644,18 @@ class Sensor {
     }
     writeNotepad(pageNumber, content) {
         return __awaiter(this, void 0, void 0, function* () {
-            const page = pageNumber && 0xFF;
+            const page = pageNumber && 0xff;
             const len = Math.min(content.length, 32);
             let data = new Array(32).fill(0);
             for (let i = 0; i < len; i++) {
-                data[i] = content && 0xFF;
+                data[i] = content && 0xff;
             }
             return (yield this.write([IC.WRITE_NOTEPAD, page, ...data])).code;
         });
     }
     readNotepad(pageNumber) {
         return __awaiter(this, void 0, void 0, function* () {
-            const page = pageNumber && 0xFF;
+            const page = pageNumber && 0xff;
             return yield this.write([IC.READ_NOTEPAD, page]);
         });
     }
@@ -677,7 +690,7 @@ class Sensor {
 exports.default = Sensor;
 class DataPacket {
     constructor() {
-        this.type = 'none';
+        this.type = "none";
     }
 }
 class ReceiveDataPacket extends DataPacket {
@@ -686,7 +699,7 @@ class ReceiveDataPacket extends DataPacket {
         this.dataSize = dataSize;
         this.callbacks = callbacks;
         this.hasError = false;
-        this.type = 'receive';
+        this.type = "receive";
     }
     emitReceiveFinish(data) {
         this.callbacks.onReceiveFinish(data, this.hasError);
