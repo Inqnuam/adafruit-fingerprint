@@ -12,7 +12,10 @@ export default class Fingerprint {
     // Events Callbacks
     private onReady: CallbackFunction[] = []
     private onceReady: CallbackFunction[] = []
-
+    private onPortError: CallbackFunction[] = []
+    private oncePortError: CallbackFunction[] = []
+    private onPortClose: CallbackFunction[] = []
+    private oncePortClose: CallbackFunction[] = []
     constructor(sensorOptions: SensorOptions) {
         this._sensor = new Sensor(sensorOptions)
 
@@ -27,6 +30,21 @@ export default class Fingerprint {
             }
 
         })
+
+        this._sensor.on('port-close', async () => {
+
+          
+            this.emitOnPortClose()
+        })
+
+
+        this._sensor.on('port-error', async () => {
+
+          
+            this.emitOnPortError()
+        })
+
+       
     }
 
     get sensor() {
@@ -35,6 +53,12 @@ export default class Fingerprint {
 
     public on(event: FingerprintEvent, callback: CallbackFunction) {
         switch(event) {
+            case 'port-close':
+                this.onPortClose.push(callback)
+                break
+            case 'port-error':
+                this.onPortError.push(callback)
+                break
             case 'ready':
                 this.onReady.push(callback)
                 break
@@ -43,6 +67,12 @@ export default class Fingerprint {
 
     public once(event: FingerprintEvent, callback: CallbackFunction) {
         switch(event) {
+            case 'port-close':
+                this.oncePortClose.push(callback)
+                break
+            case 'port-error':
+                this.oncePortError.push(callback)
+                break
             case 'ready':
                 this.onceReady.push(callback)
                 break
@@ -240,6 +270,26 @@ export default class Fingerprint {
             callback()
         }
         this.onceReady = []
+    }
+
+    private emitOnPortClose() {
+        this.onPortClose.forEach((callback) => {
+            callback()
+        })
+        for(let callback of this.oncePortClose) {
+            callback()
+        }
+        this.oncePortClose = []
+    }
+
+    private emitOnPortError() {
+        this.onPortError.forEach((callback) => {
+            callback()
+        })
+        for(let callback of this.oncePortError) {
+            callback()
+        }
+        this.oncePortError = []
     }
 }
 

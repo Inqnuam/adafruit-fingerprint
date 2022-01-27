@@ -127,7 +127,7 @@ class Sensor {
         }, (err) => {
             if (err) {
                 this.emitOnPortError();
-                throw Error(`Cannot Open the Port ${err}`);
+                // throw Error(`Cannot Open the Port ${err}`)
             }
             else {
                 setTimeout(() => {

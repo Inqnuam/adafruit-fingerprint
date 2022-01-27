@@ -42,6 +42,10 @@ class Fingerprint {
         // Events Callbacks
         this.onReady = [];
         this.onceReady = [];
+        this.onPortError = [];
+        this.oncePortError = [];
+        this.onPortClose = [];
+        this.oncePortClose = [];
         this._sensor = new Sensor_1.default(sensorOptions);
         this._sensor.on('ready', () => __awaiter(this, void 0, void 0, function* () {
             const code = yield this._sensor.verifyPass();
@@ -53,12 +57,24 @@ class Fingerprint {
                 throw new ConfirmationCodeError(code, `Cannot verify sensor's password`);
             }
         }));
+        this._sensor.on('port-close', () => __awaiter(this, void 0, void 0, function* () {
+            this.emitOnPortClose();
+        }));
+        this._sensor.on('port-error', () => __awaiter(this, void 0, void 0, function* () {
+            this.emitOnPortError();
+        }));
     }
     get sensor() {
         return this._sensor;
     }
     on(event, callback) {
         switch (event) {
+            case 'port-close':
+                this.onPortClose.push(callback);
+                break;
+            case 'port-error':
+                this.onPortError.push(callback);
+                break;
             case 'ready':
                 this.onReady.push(callback);
                 break;
@@ -66,6 +82,12 @@ class Fingerprint {
     }
     once(event, callback) {
         switch (event) {
+            case 'port-close':
+                this.oncePortClose.push(callback);
+                break;
+            case 'port-error':
+                this.oncePortError.push(callback);
+                break;
             case 'ready':
                 this.onceReady.push(callback);
                 break;
@@ -263,6 +285,24 @@ class Fingerprint {
             callback();
         }
         this.onceReady = [];
+    }
+    emitOnPortClose() {
+        this.onPortClose.forEach((callback) => {
+            callback();
+        });
+        for (let callback of this.oncePortClose) {
+            callback();
+        }
+        this.oncePortClose = [];
+    }
+    emitOnPortError() {
+        this.onPortError.forEach((callback) => {
+            callback();
+        });
+        for (let callback of this.oncePortError) {
+            callback();
+        }
+        this.oncePortError = [];
     }
 }
 exports.default = Fingerprint;

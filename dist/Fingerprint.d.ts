@@ -6,6 +6,10 @@ export default class Fingerprint {
     private indexes;
     private onReady;
     private onceReady;
+    private onPortError;
+    private oncePortError;
+    private onPortClose;
+    private oncePortClose;
     constructor(sensorOptions: SensorOptions);
     get sensor(): Sensor;
     on(event: FingerprintEvent, callback: CallbackFunction): void;
@@ -28,6 +32,8 @@ export default class Fingerprint {
     private updateParameters;
     private getEmptyIndex;
     private emitOnReady;
+    private emitOnPortClose;
+    private emitOnPortError;
 }
 export declare class ConfirmationCodeError extends Error {
     code: number;

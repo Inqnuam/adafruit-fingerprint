@@ -97,7 +97,7 @@ interface SystemParametersPacket extends AcknowledgePacket, SystemParameters {
 
 //Fingerprint class
 
-type FingerprintEvent = 'ready'
+type FingerprintEvent = 'ready' | 'port-error' | 'port-close'
 
 interface FingerprintOptions {
     attempts?: number
