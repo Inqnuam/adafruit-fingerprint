@@ -29,6 +29,7 @@ export default class Fingerprint {
     getSystemParameters(): Promise<SystemParameters>;
     previewImage(onReceiveProgress?: (progress: Progress) => void, attempts?: number): Promise<Jimp>;
     hasIndex(index: number): boolean;
+    ledOn(ledOn?: boolean): Promise<ConfirmationCode>;
     private updateParameters;
     private getEmptyIndex;
     private emitOnReady;

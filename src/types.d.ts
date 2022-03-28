@@ -19,7 +19,8 @@ interface Command {
 }
 
 interface SensorOptions {
-    serialPort: string,
+    serialPort?: string,
+    serialNumber?: string,
     baudRate?: Baudrate,
     address?: number,
     password?: number,

@@ -32,15 +32,11 @@ export default class Fingerprint {
         })
 
         this._sensor.on('port-close', async () => {
-
-          
             this.emitOnPortClose()
         })
 
 
         this._sensor.on('port-error', async () => {
-
-          
             this.emitOnPortError()
         })
 
@@ -248,6 +244,9 @@ export default class Fingerprint {
         return this.indexes.includes(index)
     }
 
+    public ledOn(ledOn: boolean = true) {
+        return this._sensor.ledOn(ledOn)
+    }
     private async updateParameters() {
         await this.getSystemParameters()
         await this.getTemplateIndexes()

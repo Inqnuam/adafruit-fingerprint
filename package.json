@@ -1,6 +1,6 @@
 {
     "name": "adafruit-fingerprint",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "description": "Adafruit Fingerprint Sensor",
     "repository": "git@github.com:Inqnuam/adafruit-fingerprint.git",
     "main": "dist/index.js",
@@ -11,11 +11,11 @@
         "build": "tsc -p ."
     },
     "devDependencies": {
-        "typescript": "^4.5.5"
+        "typescript": "^4.6.3"
     },
     "dependencies": {
         "@types/serialport": "^8.0.2",
         "jimp": "^0.16.1",
-        "serialport": "^10.0.1"
+        "serialport": "^10.4.0"
     }
 }

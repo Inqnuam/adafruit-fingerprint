@@ -8,12 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CommunicationError = exports.ERR = exports.IC = exports.CC = exports.PID = void 0;
-const serialport_1 = __importDefault(require("serialport"));
+const serialport_1 = require("serialport");
 const Helper_1 = require("./Helper");
 //Package Identifier
 var PID;
@@ -99,7 +96,7 @@ var ERR;
     ERR.PORT_NOTOPEN = 5;
 })(ERR = exports.ERR || (exports.ERR = {}));
 class Sensor {
-    constructor({ serialPort, baudRate = 57600, address = 0xffffffff, password = 0, timeout = 1000 }) {
+    constructor({ serialPort, serialNumber, baudRate = 57600, address = 0xffffffff, password = 0, timeout = 1000 }) {
         this.rx = [];
         this.receivedData = [];
         this.commands = [];
@@ -114,38 +111,48 @@ class Sensor {
         this.oncePortClose = [];
         this.onPortError = [];
         this.oncePortError = [];
-        if (!Helper_1.helper.check4BytesRange(address))
-            throw Error("Address is out of range");
-        this.address = Helper_1.helper.get4BytesArray(address);
-        if (!Helper_1.helper.check4BytesRange(password))
-            throw Error("Password is out of range");
-        this.password = Helper_1.helper.get4BytesArray(password);
-        this.validPacketStart = [...this.header, ...this.address];
-        this.timeout = timeout;
-        this.port = new serialport_1.default(serialPort, {
-            baudRate,
-        }, (err) => {
-            if (err) {
-                this.emitOnPortError();
-                // throw Error(`Cannot Open the Port ${err}`)
-            }
+        this.initSerialPort = (opt) => __awaiter(this, void 0, void 0, function* () {
+            if (!Helper_1.helper.check4BytesRange(opt.address))
+                throw Error("Address is out of range");
+            this.address = Helper_1.helper.get4BytesArray(opt.address);
+            if (!Helper_1.helper.check4BytesRange(opt.password))
+                throw Error("Password is out of range");
+            this.password = Helper_1.helper.get4BytesArray(opt.password);
+            this.validPacketStart = [...this.header, ...this.address];
+            this.timeout = opt.timeout;
+            let path = "";
+            if (opt.serialPort)
+                path = opt.serialPort;
             else {
-                setTimeout(() => {
-                    this.emitOnReady();
-                }, 700);
+                const devices = yield serialport_1.SerialPort.list();
+                const foundSensor = devices.find((x) => x.serialNumber == opt.serialNumber);
+                if (foundSensor)
+                    path = foundSensor.path;
             }
+            this.port = new serialport_1.SerialPort({ path: path, baudRate: opt.baudRate }, (err) => {
+                if (err) {
+                    this.emitOnPortError();
+                    // throw Error(`Cannot Open the Port ${err}`)
+                }
+                else {
+                    setTimeout(() => {
+                        this.emitOnReady();
+                    }, 700);
+                }
+            });
+            this.port.on("data", (data) => {
+                if (this.mode !== "available") {
+                    this.processRX(data.toJSON().data);
+                }
+            });
+            this.port.on("close", () => {
+                this.emitOnPortClose();
+            });
+            this.port.on("error", () => {
+                this.emitOnPortError();
+            });
         });
-        this.port.on("data", (data) => {
-            if (this.mode !== "available") {
-                this.processRX(data.toJSON().data);
-            }
-        });
-        this.port.on("close", () => {
-            this.emitOnPortClose();
-        });
-        this.port.on("error", () => {
-            this.emitOnPortError();
-        });
+        this.initSerialPort({ serialPort, serialNumber, baudRate, address, password, timeout });
     }
     write(commandData, dataPacket = new DataPacket()) {
         return new Promise((resolve, reject) => {

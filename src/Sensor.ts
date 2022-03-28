@@ -1,4 +1,4 @@
-import SerialPort from "serialport"
+import {SerialPort} from "serialport"
 import { helper } from "./Helper"
 
 //Package Identifier
@@ -98,11 +98,11 @@ export default class Sensor {
     private dataPacket: DataPacket = new DataPacket()
 
     private header = [0xef, 0x01]
-    private port: SerialPort
-    private address: number[]
-    private password: number[]
-    private validPacketStart: number[]
-    private timeout: number
+    private port?: SerialPort
+    private address?: number[]
+    private password?: number[]
+    private validPacketStart?: number[]
+    private timeout?: number
     private timeoutTimer: any = null
 
     //callbacks
@@ -113,23 +113,35 @@ export default class Sensor {
     private onPortError: CallbackFunction[] = []
     private oncePortError: CallbackFunction[] = []
 
-    constructor({ serialPort, baudRate = 57600, address = 0xffffffff, password = 0, timeout = 1000 }: SensorOptions) {
-        if (!helper.check4BytesRange(address)) throw Error("Address is out of range")
-        this.address = helper.get4BytesArray(address)
+    constructor({ serialPort, serialNumber, baudRate = 57600, address = 0xffffffff, password = 0, timeout = 1000 }: SensorOptions) {
+            this.initSerialPort({ serialPort, serialNumber, baudRate, address, password, timeout })
+    }
 
-        if (!helper.check4BytesRange(password)) throw Error("Password is out of range")
-        this.password = helper.get4BytesArray(password)
+    private initSerialPort = async(opt:SensorOptions) => {
+        
+        if (!helper.check4BytesRange(opt.address!)) throw Error("Address is out of range")
+        this.address = helper.get4BytesArray(opt.address!)
+
+        if (!helper.check4BytesRange(opt.password!)) throw Error("Password is out of range")
+        this.password = helper.get4BytesArray(opt.password!)
 
         this.validPacketStart = [...this.header, ...this.address]
 
-        this.timeout = timeout
+        this.timeout = opt.timeout!
+
+        let path = ""
+        if(opt.serialPort) 
+        path = opt.serialPort
+        else {
+            const devices = await SerialPort.list()
+            const foundSensor = devices.find((x) => x.serialNumber == opt.serialNumber)
+            if (foundSensor) 
+            path = foundSensor.path
+        }
 
         this.port = new SerialPort(
-            serialPort,
-            {
-                baudRate,
-            },
-            (err) => {
+            {path: path, baudRate: opt.baudRate!},
+             (err)=>{
                 if (err) {
                     this.emitOnPortError()
                    // throw Error(`Cannot Open the Port ${err}`)
@@ -140,6 +152,8 @@ export default class Sensor {
                 }
             }
         )
+        
+        
 
         this.port.on("data", (data: Buffer) => {
             if (this.mode !== "available") {
@@ -153,8 +167,8 @@ export default class Sensor {
         this.port.on("error", () => {
             this.emitOnPortError()
         })
+       
     }
-
     private write(commandData: number[], dataPacket: DataPacket = new DataPacket()): Promise<AcknowledgePacket> {
         return new Promise((resolve, reject) => {
             this.commands.push({
@@ -175,7 +189,7 @@ export default class Sensor {
     }
 
     private sendPacket(pid: 1 | 2 | 8, data: number[]) {
-        const bytes = [...this.header, ...this.address, pid]
+        const bytes = [...this.header, ...this.address!, pid]
         const length = data.length + 2
 
         let checkSum = pid
@@ -191,7 +205,7 @@ export default class Sensor {
 
         bytes.push((checkSum >> 8) & 0xff, checkSum & 0xff)
 
-        this.port.write(Buffer.from(bytes))
+        this.port!.write(Buffer.from(bytes))
     }
 
     private sendCommandPacket() {
@@ -255,7 +269,7 @@ export default class Sensor {
                 }
 
                 for (let i = 0; i < 6; i++) {
-                    if (this.rx[i] !== this.validPacketStart[i]) {
+                    if (this.rx[i] !== this.validPacketStart![i]) {
                         this.rejectCommand(ERR.RECEIVEDPACKET_CORRUPTED)
                         return
                     }
@@ -313,7 +327,7 @@ export default class Sensor {
                 }
 
                 for (let i = 0; i < 6; i++) {
-                    if (this.rx[i] !== this.validPacketStart[i]) {
+                    if (this.rx[i] !== this.validPacketStart![i]) {
                         this.dataPacket.emitReceiveError(ERR.RECEIVEDPACKET_CORRUPTED)
                         return
                     }
@@ -385,7 +399,7 @@ export default class Sensor {
         this.stopTimer()
 
         this.timeoutTimer = setTimeout(() => {
-            if (this.port.isOpen) {
+            if (this.port!.isOpen) {
                 if (this.mode === "command") this.rejectCommand(ERR.TIMEOUT)
                 else if (this.mode === "data-receive") {
                     ;(this.dataPacket as ReceiveDataPacket).emitReceiveError(ERR.TIMEOUT)
@@ -434,7 +448,7 @@ export default class Sensor {
     }
 
     public close(callback: any) {
-        this.port.close((error) => {
+        this.port!.close((error) => {
             callback(error)
         })
     }
@@ -445,7 +459,7 @@ export default class Sensor {
     }
 
     public async verifyPass() {
-        return (await this.write([IC.VERIFY_PASS, ...this.password])).code
+        return (await this.write([IC.VERIFY_PASS, ...this.password!])).code
     }
 
     public async setPass(password: number) {

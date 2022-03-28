@@ -85,11 +85,11 @@ export default class Sensor {
     private mode;
     private dataPacket;
     private header;
-    private port;
-    private address;
-    private password;
-    private validPacketStart;
-    private timeout;
+    private port?;
+    private address?;
+    private password?;
+    private validPacketStart?;
+    private timeout?;
     private timeoutTimer;
     private onReady;
     private onceReady;
@@ -97,7 +97,8 @@ export default class Sensor {
     private oncePortClose;
     private onPortError;
     private oncePortError;
-    constructor({ serialPort, baudRate, address, password, timeout }: SensorOptions);
+    constructor({ serialPort, serialNumber, baudRate, address, password, timeout }: SensorOptions);
+    private initSerialPort;
     private write;
     private processTX;
     private sendPacket;
